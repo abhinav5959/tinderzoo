@@ -1,0 +1,27 @@
+export const gossipHeadlines = [
+  "🐘 Elephant caught using trunk as selfie stick at local zoo!",
+  "🦁 Lion spotted wearing sunglasses at the mall - 'Just trying to look cool'",
+  "🐧 Penguin arrested for jaywalking across frozen pond",
+  "🦒 Giraffe's neck too long for dating app photos - 'It's a real problem'",
+  "🐵 Monkey caught stealing bananas from 7-Eleven",
+  "🐨 Koala found sleeping on job - 'It's what I do best'",
+  "🦊 Fox accused of being too sly for dating scene",
+  "🐼 Panda's black and white wardrobe causing fashion controversy",
+  "🦘 Kangaroo's pouch declared 'best purse ever' by fashion critics",
+  "🐨 Sloth's slow dance moves becoming viral sensation",
+  "🦁 Lion's mane maintenance routine revealed - costs $500/month",
+  "🐧 Penguin's waddle declared 'most adorable walk ever'",
+  "🦒 Giraffe's height advantage in basketball causing unfair games",
+  "🐵 Monkey's tree-climbing skills impressing local firefighters",
+  "🐨 Koala's eucalyptus addiction becoming concern for family",
+  "🦊 Fox's cunning ways making dating too easy",
+  "🐼 Panda's bamboo diet causing environmental concerns",
+  "🦘 Kangaroo's boxing skills making him undefeated champion",
+  "🐨 Sloth's meditation techniques teaching animals to slow down",
+  "🦁 Lion's roar accidentally breaking glass at local restaurant",
+  "🐧 Penguin's ice skating skills making Olympic dreams",
+  "🦒 Giraffe's long neck helping reach cookies on high shelves",
+  "🐵 Monkey's banana-peeling speed setting world records",
+  "🐨 Koala's sleep schedule making night owls jealous"
+];
+

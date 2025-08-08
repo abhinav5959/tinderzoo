@@ -1,3 +1,15 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +17,214 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Custom styles for TindrZoo Xtreme */
+.app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.5rem;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.card-container {
+  text-align: center;
+}
+
+.animal-card {
+  width: 320px;
+  height: 384px;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.animal-image {
+  position: relative;
+  height: 256px;
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+}
+
+.animal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.habitat-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.animal-info {
+  padding: 1.5rem;
+}
+
+.animal-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+.animal-bio {
+  color: #6b7280;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.fact-box {
+  background: linear-gradient(to right, #fef3c7 0%, #fed7aa 100%);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid #f59e0b;
+}
+
+.fact-text {
+  font-size: 0.875rem;
+  color: #374151;
+  font-style: italic;
+}
+
+.fact-label {
+  font-weight: bold;
+  color: #ea580c;
+}
+
+.swipe-buttons {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.swipe-button {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.swipe-button:hover {
+  transform: scale(1.1);
+}
+
+.swipe-button.left {
+  background: #ef4444;
+  color: white;
+}
+
+.swipe-button.left:hover {
+  background: #dc2626;
+}
+
+.swipe-button.right {
+  background: #10b981;
+  color: white;
+}
+
+.swipe-button.right:hover {
+  background: #059669;
+}
+
+.instructions {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.animal-counter {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.gossip-ticker {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to right, #ec4899 0%, #8b5cf6 50%, #ec4899 100%);
+  color: white;
+  padding: 0.75rem 0;
+  overflow: hidden;
+}
+
+.gossip-text {
+  white-space: nowrap;
+  font-size: 1.125rem;
+  font-weight: 500;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
