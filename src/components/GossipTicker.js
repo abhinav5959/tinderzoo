@@ -3,33 +3,35 @@ import { motion } from 'framer-motion';
 import { gossipHeadlines } from '../data/gossip';
 
 const GossipTicker = () => {
-  const [currentHeadline, setCurrentHeadline] = useState(0);
+  const [currentGossip, setCurrentGossip] = useState('');
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentHeadline((prev) => (prev + 1) % gossipHeadlines.length);
-    }, 4000);
+    const updateGossip = () => {
+      const randomGossip = gossipHeadlines[Math.floor(Math.random() * gossipHeadlines.length)];
+      setCurrentGossip(randomGossip);
+    };
+
+    // Set initial gossip
+    updateGossip();
+
+    // Update gossip every 5 seconds
+    const interval = setInterval(updateGossip, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 text-white py-3 overflow-hidden">
+    <div className="gossip-ticker">
       <motion.div
-        className="whitespace-nowrap text-lg font-medium"
+        className="gossip-text"
         animate={{ x: [-100, -2000] }}
         transition={{
-          duration: 15,
+          duration: 20,
           repeat: Infinity,
           ease: "linear"
         }}
       >
-        <span className="mr-8">📰 BREAKING: </span>
-        <span className="mr-8">{gossipHeadlines[currentHeadline]}</span>
-        <span className="mr-8">📰 BREAKING: </span>
-        <span className="mr-8">{gossipHeadlines[currentHeadline]}</span>
-        <span className="mr-8">📰 BREAKING: </span>
-        <span className="mr-8">{gossipHeadlines[currentHeadline]}</span>
+        📰 BREAKING: {currentGossip} 🦁
       </motion.div>
     </div>
   );

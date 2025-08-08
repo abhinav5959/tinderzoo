@@ -1,39 +1,39 @@
 export const hybridNames = [
-  "Lion-Cat",
-  "Dog-Penguin", 
-  "Giraffe-Monkey",
-  "Elephant-Sloth",
-  "Polar Bear-Dog",
-  "Cat-Monkey",
   "Lion-Penguin",
-  "Giraffe-Elephant",
-  "Sloth-Penguin",
-  "Monkey-Elephant"
+  "Elephant-Mouse", 
+  "Giraffe-Sloth",
+  "Cheetah-Turtle",
+  "Monkey-Fish",
+  "Bear-Bird",
+  "Wolf-Duck",
+  "Tiger-Rabbit",
+  "Shark-Cat",
+  "Snake-Eagle"
 ];
 
 export const hybridBios = [
-  "A majestic creature that roars like a lion but purrs like a cat. Perfect for those who want the best of both worlds.",
-  "A waddling wonder that barks underwater. Loves both belly rubs and fish.",
-  "A tall prankster who can reach the highest branches and pull the best pranks.",
-  "A slow-moving giant who takes life at their own pace. Very wise and patient.",
-  "A cold-weather dog who loves snow and cuddles. Built for winter adventures.",
-  "A mischievous feline who can swing from trees and chase laser pointers.",
-  "A regal penguin with a mighty roar. King of the ice and snow.",
-  "A towering gentle giant who can reach the stars and touch your heart.",
-  "A zen penguin who moves slowly but thinks deeply. Very philosophical.",
-  "A playful giant who loves bananas and water fights. Always up for fun."
+  "A majestic creature that can't decide whether to roar or waddle!",
+  "Tiny but mighty - can lift a car but still afraid of mice!",
+  "The world's tallest animal that moves at the speed of a sloth!",
+  "Lightning fast but always late because it stops to smell the roses!",
+  "Loves to swing from trees but also enjoys deep sea diving!",
+  "Hibernates in winter but dreams of flying south!",
+  "Howls at the moon but also quacks when startled!",
+  "Fierce predator that's actually a vegetarian!",
+  "Swims like a fish but purrs like a cat!",
+  "Slithers through the air with the grace of an eagle!"
 ];
 
 export const hybridImages = [
-  "https://images.unsplash.com/photo-1543852786-1cf6624b998d?w=400",
-  "https://images.unsplash.com/photo-1551986782-d0169b3f8fa7?w=400",
-  "https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?w=400",
-  "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=400",
-  "https://images.unsplash.com/photo-1589656966895-2f33e7653819?w=400",
-  "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400",
-  "https://images.unsplash.com/photo-1551986782-d0169b3f8fa7?w=400",
-  "https://images.unsplash.com/photo-1547721064-da6cfb341d50?w=400",
-  "https://images.unsplash.com/photo-1551986782-d0169b3f8fa7?w=400",
-  "https://images.unsplash.com/photo-1557050543-4d5f2e07c5e9?w=400"
+  "https://via.placeholder.com/300x300/FF6B6B/FFFFFF?text=Lion-Penguin",
+  "https://via.placeholder.com/300x300/4ECDC4/FFFFFF?text=Elephant-Mouse",
+  "https://via.placeholder.com/300x300/45B7D1/FFFFFF?text=Giraffe-Sloth",
+  "https://via.placeholder.com/300x300/96CEB4/FFFFFF?text=Cheetah-Turtle",
+  "https://via.placeholder.com/300x300/FFEAA7/FFFFFF?text=Monkey-Fish",
+  "https://via.placeholder.com/300x300/DDA0DD/FFFFFF?text=Bear-Bird",
+  "https://via.placeholder.com/300x300/98D8C8/FFFFFF?text=Wolf-Duck",
+  "https://via.placeholder.com/300x300/F7DC6F/FFFFFF?text=Tiger-Rabbit",
+  "https://via.placeholder.com/300x300/BB8FCE/FFFFFF?text=Shark-Cat",
+  "https://via.placeholder.com/300x300/85C1E9/FFFFFF?text=Snake-Eagle"
 ];
 

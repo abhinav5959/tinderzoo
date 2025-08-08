@@ -8,39 +8,36 @@ const DateGame = ({ onReset }) => {
 
   const dateOptions = [
     {
-      id: 'dinner',
       name: 'Romantic Dinner',
       emoji: '🍽️',
       outcomes: [
-        "The lion ate the zebra. Literally. It was a very short date.",
-        "The penguin tried to cook but kept sliding on the ice. Kitchen disaster!",
-        "The giraffe couldn't fit in the restaurant. Had to eat through the window.",
-        "The elephant ordered everything on the menu. Bill was astronomical!",
-        "The sloth fell asleep during appetizers. Still sleeping there."
+        'The lion ate the zebra! 🦁💀',
+        'They shared a candlelit dinner and fell in love! 💕',
+        'The penguin froze the sushi! 🐧❄️',
+        'They had a food fight and made a mess! 🍕💥',
+        'The giraffe couldn\'t reach the table! 🦒😅'
       ]
     },
     {
-      id: 'walk',
       name: 'Long Walk',
-      emoji: '🚶',
+      emoji: '🚶‍♂️',
       outcomes: [
-        "The polar bear melted in the sun. Now it's just a regular bear.",
-        "The monkey kept climbing trees and getting lost. GPS didn't help.",
-        "The penguin tried to waddle on sand. It was not pretty.",
-        "The giraffe got stuck under a low bridge. Fire department called.",
-        "The sloth walked 3 feet in 2 hours. New world record!"
+        'The sloth fell asleep during the walk! 🦥😴',
+        'They discovered a beautiful sunset together! 🌅💕',
+        'The cheetah ran too fast and left the other behind! 🐆💨',
+        'They got lost in the jungle! 🌴🗺️',
+        'The elephant stepped on the mouse\'s tail! 🐘🐭'
       ]
     },
     {
-      id: 'netflix',
       name: 'Netflix & Chill',
       emoji: '📺',
       outcomes: [
-        "The lion roared at every jump scare. Neighbors complained.",
-        "The penguin kept sliding off the couch. Couch is now an ice rink.",
-        "The giraffe's neck blocked the TV. Had to watch from outside.",
-        "The elephant sat on the remote. Now everything is broken.",
-        "The sloth fell asleep during the opening credits. Still there."
+        'They watched "The Lion King" and cried together! 🦁👑',
+        'The bear fell asleep on the couch! 🐻😴',
+        'They argued about what to watch! 📺😤',
+        'The monkey kept changing the channel! 🐒📱',
+        'They cuddled and watched a romantic movie! 💕🍿'
       ]
     }
   ];
@@ -60,67 +57,76 @@ const DateGame = ({ onReset }) => {
   };
 
   return (
-    <motion.div
-      className="fixed inset-0 bg-gradient-to-br from-purple-400 via-pink-500 to-red-400 flex items-center justify-center z-50"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <div className="bg-white rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl">
-        <h2 className="text-3xl font-funny font-bold text-center text-purple-600 mb-8">
-          Choose Your Date! 💕
-        </h2>
-
-        <AnimatePresence>
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <motion.div
+          className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center"
+          initial={{ scale: 0.8, y: 50 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.8, y: 50 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
           {!showOutcome ? (
-            <motion.div
-              key="date-options"
-              className="space-y-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              {dateOptions.map((option) => (
-                <motion.button
-                  key={option.id}
-                  onClick={() => handleDateSelect(option)}
-                  className="w-full bg-gradient-to-r from-pink-100 to-purple-100 hover:from-pink-200 hover:to-purple-200 p-6 rounded-2xl border-2 border-transparent hover:border-pink-300 transition-all duration-200"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="flex items-center gap-4">
-                    <span className="text-4xl">{option.emoji}</span>
-                    <span className="text-xl font-medium text-gray-800">{option.name}</span>
-                  </div>
-                </motion.button>
-              ))}
-            </motion.div>
+            <>
+              <h2 className="text-3xl font-funny font-bold text-gray-800 mb-6">
+                Choose a Date Activity! 💕
+              </h2>
+              
+              <div className="space-y-4">
+                {dateOptions.map((option, index) => (
+                  <motion.button
+                    key={index}
+                    onClick={() => handleDateSelect(option)}
+                    className="w-full p-4 bg-gradient-to-r from-pink-400 to-purple-400 text-white rounded-xl font-medium hover:from-pink-500 hover:to-purple-500 transition-all transform hover:scale-105"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div className="text-2xl mb-2">{option.emoji}</div>
+                    <div>{option.name}</div>
+                  </motion.button>
+                ))}
+              </div>
+            </>
           ) : (
-            <motion.div
-              key="outcome"
-              className="text-center"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-            >
-              <div className="text-6xl mb-4">🎭</div>
-              <h3 className="text-2xl font-funny font-bold text-purple-600 mb-4">
-                Date Outcome!
+            <>
+              <motion.div
+                className="text-6xl mb-4"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 300, damping: 10 }}
+              >
+                {selectedDate.emoji}
+              </motion.div>
+              
+              <h3 className="text-2xl font-funny font-bold text-gray-800 mb-4">
+                {selectedDate.name} Result:
               </h3>
-              <p className="text-gray-700 text-lg mb-8 leading-relaxed">
+              
+              <motion.p
+                className="text-lg text-gray-700 mb-6 p-4 bg-yellow-100 rounded-lg"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
                 {outcome}
-              </p>
+              </motion.p>
+              
               <button
                 onClick={handleReset}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-xl font-medium hover:from-purple-600 hover:to-pink-600 transition-colors"
+                className="px-6 py-3 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 transition-colors"
               >
-                Try Again! 🔄
+                Back to Swiping! 🦁
               </button>
-            </motion.div>
+            </>
           )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

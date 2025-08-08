@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { hybridNames, hybridBios, hybridImages } from '../data/hybrids';
 
-const MatchScreen = ({ animal1, animal2, onKeepSwiping, onGoOnDate }) => {
-  const [hybrid, setHybrid] = useState(null);
+const MatchScreen = ({ animal1, animal2, onKeepSwiping, onGoOnDate, onOpenChat }) => {
+  const [hybridAnimal, setHybridAnimal] = useState(null);
   const [isGenerating, setIsGenerating] = useState(true);
 
   useEffect(() => {
@@ -14,14 +14,16 @@ const MatchScreen = ({ animal1, animal2, onKeepSwiping, onGoOnDate }) => {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const randomIndex = Math.floor(Math.random() * hybridNames.length);
-      const newHybrid = {
-        name: hybridNames[randomIndex],
-        bio: hybridBios[randomIndex],
-        image: hybridImages[randomIndex]
-      };
+      const randomName = hybridNames[Math.floor(Math.random() * hybridNames.length)];
+      const randomBio = hybridBios[Math.floor(Math.random() * hybridBios.length)];
+      const randomImage = hybridImages[Math.floor(Math.random() * hybridImages.length)];
       
-      setHybrid(newHybrid);
+      setHybridAnimal({
+        name: randomName,
+        bio: randomBio,
+        image: randomImage
+      });
+      
       setIsGenerating(false);
     };
 
@@ -29,100 +31,94 @@ const MatchScreen = ({ animal1, animal2, onKeepSwiping, onGoOnDate }) => {
   }, [animal1, animal2]);
 
   return (
-    <motion.div
-      className="fixed inset-0 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600 flex items-center justify-center z-50"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl">
-        {/* Match Animation */}
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
         <motion.div
-          className="text-center mb-8"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 10 }}
+          className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center"
+          initial={{ scale: 0.8, y: 50 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.8, y: 50 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <h1 className="text-4xl font-funny font-bold text-pink-600 mb-4">
-            It's a Match! 🎉
-          </h1>
-          <div className="text-6xl mb-4">💕</div>
-        </motion.div>
+          {/* Match Animation */}
+          <motion.div
+            className="text-6xl mb-4"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              rotate: [0, 10, -10, 0]
+            }}
+            transition={{ 
+              duration: 1,
+              repeat: Infinity,
+              repeatDelay: 2
+            }}
+          >
+            🎉
+          </motion.div>
 
-        {/* Matched Animals */}
-        <div className="flex justify-center gap-4 mb-6">
-          <div className="text-center">
-            <img
-              src={animal1.image}
-              alt={animal1.name}
-              className="w-16 h-16 rounded-full object-cover border-4 border-pink-300"
-            />
-            <p className="text-sm font-medium mt-2">{animal1.name}</p>
-          </div>
-          <div className="text-center">
-            <img
-              src={animal2.image}
-              alt={animal2.name}
-              className="w-16 h-16 rounded-full object-cover border-4 border-pink-300"
-            />
-            <p className="text-sm font-medium mt-2">{animal2.name}</p>
-          </div>
-        </div>
+          <h2 className="text-3xl font-funny font-bold text-gray-800 mb-2">
+            It's a Match!
+          </h2>
+          
+          <p className="text-gray-600 mb-6">
+            {animal1.name} and {animal2.name} are now dating! 💕
+          </p>
 
-        {/* Hybrid Animal */}
-        <AnimatePresence>
+          {/* Hybrid Animal */}
           {isGenerating ? (
-            <motion.div
-              key="generating"
-              className="text-center py-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className="text-4xl mb-4">🧬</div>
-              <p className="text-gray-600">Generating your hybrid baby...</p>
-              <div className="mt-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mx-auto"></div>
+            <div className="mb-6">
+              <div className="w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
               </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="hybrid"
-              className="text-center py-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <h3 className="text-xl font-funny font-bold text-purple-600 mb-2">
-                Meet {hybrid.name}!
+              <p className="text-gray-600">Generating hybrid animal...</p>
+            </div>
+          ) : hybridAnimal ? (
+            <div className="mb-6">
+              <div className="w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mx-auto mb-4 overflow-hidden">
+                <img 
+                  src={hybridAnimal.image} 
+                  alt={hybridAnimal.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="text-xl font-funny font-bold text-gray-800 mb-2">
+                {hybridAnimal.name}
               </h3>
-              <img
-                src={hybrid.image}
-                alt={hybrid.name}
-                className="w-24 h-24 rounded-full object-cover mx-auto mb-3 border-4 border-purple-300"
-              />
-              <p className="text-sm text-gray-600 mb-6">{hybrid.bio}</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <p className="text-gray-600 text-sm">
+                {hybridAnimal.bio}
+              </p>
+            </div>
+          ) : null}
 
-        {/* Action Buttons */}
-        <div className="flex gap-4">
-          <button
-            onClick={onKeepSwiping}
-            className="flex-1 bg-gray-500 text-white py-3 rounded-xl font-medium hover:bg-gray-600 transition-colors"
-          >
-            Keep Swiping
-          </button>
-          <button
-            onClick={onGoOnDate}
-            disabled={isGenerating}
-            className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white py-3 rounded-xl font-medium hover:from-pink-600 hover:to-purple-600 transition-colors disabled:opacity-50"
-          >
-            Go on a Date! 💕
-          </button>
-        </div>
-      </div>
-    </motion.div>
+          {/* Action Buttons */}
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={onKeepSwiping}
+              className="px-6 py-3 bg-gray-500 text-white rounded-full font-medium hover:bg-gray-600 transition-colors"
+            >
+              Keep Swiping
+            </button>
+            <button
+              onClick={() => onOpenChat({ animal1, animal2, id: Date.now().toString() })}
+              className="px-6 py-3 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 transition-colors"
+            >
+              💬 Chat Now
+            </button>
+            <button
+              onClick={onGoOnDate}
+              className="px-6 py-3 bg-pink-500 text-white rounded-full font-medium hover:bg-pink-600 transition-colors"
+            >
+              Go on a Date! 💕
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

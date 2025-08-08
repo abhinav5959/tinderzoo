@@ -3,96 +3,99 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const HabitatChaos = ({ animal1, animal2, onClose }) => {
   const habitatConflicts = {
-    'arctic-domestic': {
-      message: "The penguin tried to visit the cat but melted in the heat! 🐧💦",
-      animation: "🌡️"
+    'arctic': {
+      'desert': 'The arctic animal melted in the desert heat! 🌡️💧',
+      'jungle': 'The arctic animal got lost in the humid jungle! 🌴❄️',
+      'ocean': 'The arctic animal tried to swim but sank like a rock! 🏊‍♂️💧'
     },
-    'arctic-savanna': {
-      message: "The polar bear got lost in the desert and is now just a regular bear! 🐻☀️",
-      animation: "🏜️"
+    'desert': {
+      'arctic': 'The desert animal froze solid in the arctic! 🥶❄️',
+      'jungle': 'The desert animal got lost in the dense jungle! 🌴🏜️',
+      'ocean': 'The desert animal tried to swim but sank like a rock! 🏊‍♂️💧'
     },
-    'arctic-jungle': {
-      message: "The penguin tried to climb trees but kept sliding down! 🐧🌴",
-      animation: "🌴"
+    'jungle': {
+      'arctic': 'The jungle animal froze solid in the arctic! 🥶❄️',
+      'desert': 'The jungle animal dried up in the desert heat! 🌡️💧',
+      'ocean': 'The jungle animal tried to swim but sank like a rock! 🏊‍♂️💧'
     },
-    'savanna-domestic': {
-      message: "The lion scared the cat so much it's still hiding under the bed! 🦁😿",
-      animation: "🏠"
-    },
-    'savanna-arctic': {
-      message: "The lion tried to hunt in the snow but just got cold! 🦁❄️",
-      animation: "❄️"
-    },
-    'jungle-domestic': {
-      message: "The monkey swung through the house and broke everything! 🐵🏠",
-      animation: "🏠"
-    },
-    'jungle-arctic': {
-      message: "The monkey tried to build a snowman but it kept falling apart! 🐵⛄",
-      animation: "⛄"
+    'ocean': {
+      'arctic': 'The ocean animal froze solid in the arctic! 🥶❄️',
+      'desert': 'The ocean animal dried up in the desert heat! 🌡️💧',
+      'jungle': 'The ocean animal got lost in the dense jungle! 🌴🏊‍♂️'
     }
   };
 
-  const getConflictKey = (hab1, hab2) => {
-    const habitats = [hab1, hab2].sort();
-    return `${habitats[0]}-${habitats[1]}`;
+  const getConflictMessage = () => {
+    const conflict = habitatConflicts[animal1.habitat]?.[animal2.habitat];
+    return conflict || 'These animals live in completely different worlds! 🌍';
   };
-
-  const conflictKey = getConflictKey(animal1.habitat, animal2.habitat);
-  const conflict = habitatConflicts[conflictKey];
-
-  if (!conflict) return null;
 
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 bg-gradient-to-br from-red-400 via-orange-500 to-yellow-400 flex items-center justify-center z-50"
+        className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
         <motion.div
-          className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl text-center"
+          className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center"
           initial={{ scale: 0.8, y: 50 }}
           animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.8, y: 50 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <div className="text-6xl mb-4 animate-bounce-slow">
-            {conflict.animation}
-          </div>
-          
-          <h2 className="text-2xl font-funny font-bold text-red-600 mb-4">
+          {/* Chaos Animation */}
+          <motion.div
+            className="text-6xl mb-4"
+            animate={{ 
+              rotate: [0, 10, -10, 0],
+              scale: [1, 1.2, 1]
+            }}
+            transition={{ 
+              duration: 1,
+              repeat: Infinity,
+              repeatDelay: 1
+            }}
+          >
+            💥
+          </motion.div>
+
+          <h2 className="text-3xl font-funny font-bold text-gray-800 mb-4">
             Habitat Chaos! 🌍
           </h2>
           
-          <p className="text-gray-700 text-lg mb-6 leading-relaxed">
-            {conflict.message}
-          </p>
-          
           <div className="flex justify-center gap-4 mb-6">
             <div className="text-center">
-              <img
-                src={animal1.image}
-                alt={animal1.name}
-                className="w-16 h-16 rounded-full object-cover border-4 border-red-300"
-              />
-              <p className="text-sm font-medium mt-2">{animal1.name}</p>
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full mx-auto mb-2 flex items-center justify-center text-2xl">
+                🦁
+              </div>
+              <p className="text-sm font-medium">{animal1.name}</p>
+              <p className="text-xs text-gray-500">{animal1.habitat}</p>
             </div>
             <div className="text-center">
-              <img
-                src={animal2.image}
-                alt={animal2.name}
-                className="w-16 h-16 rounded-full object-cover border-4 border-red-300"
-              />
-              <p className="text-sm font-medium mt-2">{animal2.name}</p>
+              <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-blue-400 rounded-full mx-auto mb-2 flex items-center justify-center text-2xl">
+                🐧
+              </div>
+              <p className="text-sm font-medium">{animal2.name}</p>
+              <p className="text-xs text-gray-500">{animal2.habitat}</p>
             </div>
           </div>
-          
+
+          <motion.p
+            className="text-lg text-gray-700 mb-6 p-4 bg-red-100 rounded-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            {getConflictMessage()}
+          </motion.p>
+
           <button
             onClick={onClose}
-            className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-8 py-3 rounded-xl font-medium hover:from-red-600 hover:to-orange-600 transition-colors"
+            className="px-6 py-3 bg-red-500 text-white rounded-full font-medium hover:bg-red-600 transition-colors"
           >
-            That Was Hilarious! 😂
+            Continue Swiping! 🦁
           </button>
         </motion.div>
       </motion.div>

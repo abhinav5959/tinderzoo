@@ -1,0 +1,19 @@
+{
+  "name": "TindrZoo Xtreme Local Database",
+  "version": "1.0.0",
+  "created": "2025-08-08T17:49:24.069Z",
+  "description": "Local JSON-based database for TindrZoo Xtreme app",
+  "collections": {
+    "users": "User accounts and authentication data",
+    "petProfiles": "Pet profile information",
+    "likes": "Liked animal records",
+    "matches": "Animal match records"
+  },
+  "location": "D:\\New folder (2)\\tindrzoo-xtreme\\database",
+  "files": [
+    "users.json",
+    "petProfiles.json",
+    "likes.json",
+    "matches.json"
+  ]
+}
