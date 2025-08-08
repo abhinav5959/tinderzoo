@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const ProfileCard = ({ animal, onSwipe, onSendInterest }) => {
+const ProfileCard = ({ animal, onSwipe, onSendInterest, onCardClick }) => {
   const handleDragEnd = (event, info) => {
     const swipeThreshold = 100;
     if (info.offset.x > swipeThreshold) {
@@ -16,14 +16,23 @@ const ProfileCard = ({ animal, onSwipe, onSendInterest }) => {
     onSendInterest(animal);
   };
 
+  const handleCardClick = (e) => {
+    // Only trigger if it's a click, not a drag
+    if (Math.abs(e.movementX) < 10 && Math.abs(e.movementY) < 10) {
+      onCardClick(animal);
+    }
+  };
+
   return (
     <motion.div
       className="animal-card"
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={handleDragEnd}
+      onClick={handleCardClick}
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      style={{ cursor: 'pointer' }}
     >
       {/* Animal Image */}
       <div className="animal-image">
