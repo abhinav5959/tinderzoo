@@ -133,12 +133,12 @@ const MatchesScreen = ({ onOpenChat }) => {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="interest-header">
-                      <img src={interest.fromPet.image} alt={interest.fromPet.name} />
+                      <img src={interest.fromPet.image || interest.fromPet.photos?.[0]} alt={interest.fromPet.name} />
                       <div className="interest-info">
                         <h3>{interest.fromPet.name}</h3>
-                        <p>Sent you a {interest.type}!</p>
+                        <p>Sent you: "{interest.message || interest.type || 'an interest'}" 🐾</p>
                         <span className="interest-time">
-                          {new Date(interest.sentAt).toLocaleDateString()}
+                          {new Date(interest.sentAt || interest.timestamp).toLocaleDateString()}
                         </span>
                       </div>
                     </div>

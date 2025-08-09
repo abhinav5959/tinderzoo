@@ -76,13 +76,28 @@ const PetProfileCreator = ({ onProfileCreated, existingProfiles = [] }) => {
       createdAt: new Date().toISOString()
     };
 
-    // Save to localStorage
-    const existingProfiles = JSON.parse(localStorage.getItem('petProfiles') || '[]');
-    const updatedProfiles = [...existingProfiles, newProfile];
-    localStorage.setItem('petProfiles', JSON.stringify(updatedProfiles));
-
-    // Set as active profile
-    localStorage.setItem('activePetProfile', JSON.stringify(newProfile));
+    // Get current user
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    
+    if (currentUser.id) {
+      // Save to user-specific storage
+      const userPetProfiles = JSON.parse(localStorage.getItem(`user_${currentUser.id}_petProfiles`) || '[]');
+      const updatedProfiles = [...userPetProfiles, newProfile];
+      localStorage.setItem(`user_${currentUser.id}_petProfiles`, JSON.stringify(updatedProfiles));
+      
+      // Also update current session storage
+      localStorage.setItem('petProfiles', JSON.stringify(updatedProfiles));
+      
+      // Set as active profile for user
+      localStorage.setItem(`user_${currentUser.id}_activePetProfile`, newProfile.id);
+      localStorage.setItem('activePetProfile', JSON.stringify(newProfile));
+    } else {
+      // Fallback to global storage if no user logged in
+      const existingProfiles = JSON.parse(localStorage.getItem('petProfiles') || '[]');
+      const updatedProfiles = [...existingProfiles, newProfile];
+      localStorage.setItem('petProfiles', JSON.stringify(updatedProfiles));
+      localStorage.setItem('activePetProfile', JSON.stringify(newProfile));
+    }
 
     onProfileCreated(newProfile);
   };
@@ -106,20 +121,48 @@ const PetProfileCreator = ({ onProfileCreated, existingProfiles = [] }) => {
   };
 
   const setProfileActive = (profile) => {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    
+    if (currentUser.id) {
+      // Save to user-specific storage
+      localStorage.setItem(`user_${currentUser.id}_activePetProfile`, profile.id);
+    }
+    
+    // Also save to current session
     localStorage.setItem('activePetProfile', JSON.stringify(profile));
     setActiveProfile(profile);
   };
 
   const deleteProfile = (profileId) => {
-    const profiles = loadExistingProfiles();
-    const updatedProfiles = profiles.filter(p => p.id !== profileId);
-    localStorage.setItem('petProfiles', JSON.stringify(updatedProfiles));
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     
-    // If we deleted the active profile, clear it
-    const activeProfile = JSON.parse(localStorage.getItem('activePetProfile') || 'null');
-    if (activeProfile && activeProfile.id === profileId) {
-      localStorage.removeItem('activePetProfile');
-      setActiveProfile(null);
+    if (currentUser.id) {
+      // Delete from user-specific storage
+      const userPetProfiles = JSON.parse(localStorage.getItem(`user_${currentUser.id}_petProfiles`) || '[]');
+      const updatedProfiles = userPetProfiles.filter(p => p.id !== profileId);
+      localStorage.setItem(`user_${currentUser.id}_petProfiles`, JSON.stringify(updatedProfiles));
+      
+      // Update current session storage
+      localStorage.setItem('petProfiles', JSON.stringify(updatedProfiles));
+      
+      // If we deleted the active profile, clear it
+      const activeProfileId = localStorage.getItem(`user_${currentUser.id}_activePetProfile`);
+      if (activeProfileId === profileId.toString()) {
+        localStorage.removeItem(`user_${currentUser.id}_activePetProfile`);
+        localStorage.removeItem('activePetProfile');
+        setActiveProfile(null);
+      }
+    } else {
+      // Fallback to global storage
+      const profiles = loadExistingProfiles();
+      const updatedProfiles = profiles.filter(p => p.id !== profileId);
+      localStorage.setItem('petProfiles', JSON.stringify(updatedProfiles));
+      
+      const activeProfile = JSON.parse(localStorage.getItem('activePetProfile') || 'null');
+      if (activeProfile && activeProfile.id === profileId) {
+        localStorage.removeItem('activePetProfile');
+        setActiveProfile(null);
+      }
     }
   };
 

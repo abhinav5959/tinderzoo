@@ -54,6 +54,10 @@ const LoginSystem = ({ onLoginSuccess }) => {
 
     if (user) {
       localStorage.setItem('currentUser', JSON.stringify(user));
+      
+      // Load user's pet profiles
+      loadUserPetProfiles(user.id);
+      
       setSuccess('Login successful! Redirecting...');
       setTimeout(() => {
         onLoginSuccess(user);
@@ -61,6 +65,32 @@ const LoginSystem = ({ onLoginSuccess }) => {
     } else {
       setError('Invalid username or password');
     }
+  };
+
+  const loadUserPetProfiles = (userId) => {
+    // Load user-specific pet profiles
+    const userPetProfiles = JSON.parse(localStorage.getItem(`user_${userId}_petProfiles`) || '[]');
+    
+    // Set as current pet profiles
+    localStorage.setItem('petProfiles', JSON.stringify(userPetProfiles));
+    
+    // Load user's active profile if it exists
+    const activeProfileId = localStorage.getItem(`user_${userId}_activePetProfile`);
+    if (activeProfileId) {
+      const activeProfile = userPetProfiles.find(p => p.id === activeProfileId);
+      if (activeProfile) {
+        localStorage.setItem('activePetProfile', JSON.stringify(activeProfile));
+      }
+    }
+    
+    // Load user's other data
+    const userMatches = JSON.parse(localStorage.getItem(`user_${userId}_matches`) || '[]');
+    const userSentInterests = JSON.parse(localStorage.getItem(`user_${userId}_sentInterests`) || '[]');
+    const userReceivedInterests = JSON.parse(localStorage.getItem(`user_${userId}_receivedInterests`) || '[]');
+    
+    localStorage.setItem('matches', JSON.stringify(userMatches));
+    localStorage.setItem('sentInterests', JSON.stringify(userSentInterests));
+    localStorage.setItem('receivedInterests', JSON.stringify(userReceivedInterests));
   };
 
   const handleRegister = () => {

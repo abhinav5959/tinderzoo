@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ProfileViewer = ({ profile, isOwnProfile = false, onClose, onEdit, onDelete }) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [showFullPhoto, setShowFullPhoto] = useState(false);
+
+  // Handle ESC key to close
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [onClose]);
 
   const nextPhoto = () => {
     setCurrentPhotoIndex((prev) => 
@@ -26,8 +40,15 @@ const ProfileViewer = ({ profile, isOwnProfile = false, onClose, onEdit, onDelet
     });
   };
 
+  const handleOverlayClick = (e) => {
+    // Close if clicking on the overlay background (not the content)
+    if (e.target.className === 'profile-viewer-overlay') {
+      onClose();
+    }
+  };
+
   return (
-    <div className="profile-viewer-overlay">
+    <div className="profile-viewer-overlay" onClick={handleOverlayClick}>
       <motion.div 
         className="profile-viewer-container"
         initial={{ opacity: 0, scale: 0.8 }}
@@ -38,7 +59,12 @@ const ProfileViewer = ({ profile, isOwnProfile = false, onClose, onEdit, onDelet
         {/* Header */}
         <div className="profile-viewer-header">
           <h2>{isOwnProfile ? '🐕 My Pet Profile' : '🐾 Pet Profile'}</h2>
-          <button onClick={onClose} className="close-profile-btn">
+          <button 
+            onClick={onClose} 
+            className="close-profile-btn"
+            title="Close Profile"
+            aria-label="Close Profile"
+          >
             ✕
           </button>
         </div>

@@ -51,17 +51,21 @@ const ChatSystem = ({ match, onClose }) => {
   const sendMessage = () => {
     if (!newMessage.trim()) return;
 
+    const activeProfile = JSON.parse(localStorage.getItem('activePetProfile') || '{}');
     const message = {
       id: Date.now(),
       text: newMessage,
       sender: 'user',
-      timestamp: new Date().toISOString()
+      senderName: activeProfile.name || 'You',
+      senderImage: activeProfile.image || activeProfile.photos?.[0],
+      timestamp: new Date().toISOString(),
+      read: true
     };
 
     setMessages(prev => [...prev, message]);
     setNewMessage('');
 
-    // Simulate typing indicator
+    // Simulate typing indicator with more realistic delay
     setIsTyping(true);
     setTimeout(() => {
       const autoResponse = autoResponses[Math.floor(Math.random() * autoResponses.length)];
@@ -69,11 +73,14 @@ const ChatSystem = ({ match, onClose }) => {
         id: Date.now() + 1,
         text: autoResponse,
         sender: 'match',
-        timestamp: new Date().toISOString()
+        senderName: match.animal2.name,
+        senderImage: match.animal2.image,
+        timestamp: new Date().toISOString(),
+        read: false
       };
       setMessages(prev => [...prev, response]);
       setIsTyping(false);
-    }, 1000 + Math.random() * 2000);
+    }, 1500 + Math.random() * 3000);
   };
 
   const handleKeyPress = (e) => {
@@ -123,7 +130,26 @@ const ChatSystem = ({ match, onClose }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
+                {message.sender === 'match' && (
+                  <div className="message-avatar">
+                    <img 
+                      src={message.senderImage || match.animal2.image} 
+                      alt={message.senderName || match.animal2.name}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="message-content">
+                  {message.sender === 'match' && (
+                    <div className="message-sender">
+                      {message.senderName || match.animal2.name}
+                    </div>
+                  )}
                   <p>{message.text}</p>
                   <span className="message-time">
                     {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

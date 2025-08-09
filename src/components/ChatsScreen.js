@@ -7,14 +7,25 @@ const ChatsScreen = ({ onOpenChat }) => {
 
   useEffect(() => {
     loadMatchesAndChats();
+    
+    // Refresh chat data every 5 seconds to show new messages
+    const interval = setInterval(loadMatchesAndChats, 5000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const loadMatchesAndChats = () => {
     const savedMatches = JSON.parse(localStorage.getItem('matches') || '[]');
-    const savedMessages = JSON.parse(localStorage.getItem('chatMessages') || '{}');
+    
+    // Load messages for each match from individual chat storage
+    const allChatMessages = {};
+    savedMatches.forEach(match => {
+      const matchMessages = JSON.parse(localStorage.getItem(`chat_${match.id}`) || '[]');
+      allChatMessages[match.id] = matchMessages;
+    });
 
     setMatches(savedMatches);
-    setChatMessages(savedMessages);
+    setChatMessages(allChatMessages);
   };
 
   const getLastMessage = (matchId) => {

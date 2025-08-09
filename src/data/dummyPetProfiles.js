@@ -177,3 +177,4 @@ export const resetToDummyProfiles = () => {
   console.log('Reset to dummy pet profiles!');
   return dummyPetProfiles;
 };
+

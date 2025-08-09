@@ -32,31 +32,45 @@ const ProfileCard = ({ animal, onSwipe, onSendInterest, onCardClick }) => {
       onClick={handleCardClick}
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'pointer', position: 'relative' }}
     >
-      {/* Animal Image */}
-      <div className="animal-image">
-        <img
-          src={animal.image}
-          alt={animal.name}
-        />
-        <div className="habitat-badge">
-          <span>🏠</span>
-          <span>{animal.habitat}</span>
-        </div>
-        
-        {/* Interest Button */}
-        <button 
-          className="interest-btn"
-          onClick={handleInterestClick}
-          title="Send Interest"
-        >
-          🐾
-        </button>
-      </div>
+      {/* Background Image - Full Card */}
+      <img
+        src={animal.image}
+        alt={animal.name}
+        loading="lazy"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'center',
+          display: 'block',
+          borderRadius: 'inherit',
+          zIndex: 1
+        }}
+      />
 
-      {/* Animal Info */}
-      <div className="animal-info">
+      {/* Habitat Badge */}
+      <div className="habitat-badge" style={{ zIndex: 3 }}>
+        <span>🏠</span>
+        <span>{animal.habitat}</span>
+      </div>
+      
+      {/* Interest Button */}
+      <button 
+        className="interest-btn"
+        onClick={handleInterestClick}
+        title="Send Interest"
+        style={{ zIndex: 3 }}
+      >
+        🐾
+      </button>
+
+      {/* Animal Info Overlay */}
+      <div className="animal-info" style={{ zIndex: 2 }}>
         <h2 className="animal-name">
           {animal.name}
         </h2>

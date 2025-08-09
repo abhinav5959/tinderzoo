@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { animals } from './data/animals';
+import { animals as staticAnimals } from './data/animals';
 import { loadDummyProfiles } from './data/dummyPetProfiles';
 
 import PetProfileCreator from './components/PetProfileCreator';
@@ -22,6 +22,7 @@ import ChatsScreen from './components/ChatsScreen';
 import SettingsScreen from './components/SettingsScreen';
 import LoginSystem from './components/LoginSystem';
 import ProfileBrowser from './components/ProfileBrowser';
+import ProfileViewer from './components/ProfileViewer';
 
 function App() {
   const [currentAnimalIndex, setCurrentAnimalIndex] = useState(0);
@@ -53,8 +54,58 @@ function App() {
   const [showLogin, setShowLogin] = useState(true);
   const [showProfileViewer, setShowProfileViewer] = useState(false);
   const [selectedAnimal, setSelectedAnimal] = useState(null);
+  const [animals, setAnimals] = useState([]);
 
   const currentAnimal = animals[currentAnimalIndex];
+
+  const loadAllUserPets = () => {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    let allPets = [];
+    
+    console.log('🔍 Debug loadAllUserPets:');
+    console.log('All users:', users);
+    console.log('Current user:', currentUser);
+    
+    // Load pets from all users except current user
+    users.forEach(user => {
+      console.log(`Checking user ${user.username} (ID: ${user.id})`);
+      if (user.id !== currentUser.id) {
+        const userPets = JSON.parse(localStorage.getItem(`user_${user.id}_petProfiles`) || '[]');
+        console.log(`  Found ${userPets.length} pets for ${user.username}:`, userPets);
+        
+        // Add user info to each pet for identification
+        const petsWithOwner = userPets.map(pet => ({
+          ...pet,
+          ownerId: user.id,
+          ownerUsername: user.username,
+          // Convert pet profile format to match animal card format
+          image: pet.photos?.[0] || pet.image || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400",
+          bio: pet.description || `${pet.personality?.join(', ') || 'Friendly pet'}`,
+          habitat: pet.species?.toLowerCase() || 'domestic',
+          fakeFact: `${pet.name} loves ${pet.favoriteActivity || 'playing'}!`
+        }));
+        allPets = [...allPets, ...petsWithOwner];
+        console.log(`  Added ${petsWithOwner.length} pets to allPets`);
+      }
+    });
+    
+    console.log(`Total user pets found: ${allPets.length}`);
+    
+    // Mix in some static animals if not enough user pets
+    if (allPets.length < 5) {
+      const staticToAdd = staticAnimals.slice(0, 10 - allPets.length);
+      allPets = [...allPets, ...staticToAdd];
+      console.log(`Added ${staticToAdd.length} static animals`);
+    }
+    
+    // Shuffle the array for variety
+    allPets = allPets.sort(() => Math.random() - 0.5);
+    
+    console.log('Final animals array:', allPets);
+    setAnimals(allPets);
+    setCurrentAnimalIndex(0);
+  };
 
   const loadUserData = (user) => {
     // Load user-specific data from localStorage
@@ -67,21 +118,32 @@ function App() {
       totalLikes: userLikedAnimals.length,
       totalMatches: userMatches.length
     });
+    
+    // Load all available pets for swiping
+    loadAllUserPets();
   };
 
   // Check for existing login on app start
   useEffect(() => {
     const checkExistingLogin = () => {
-      // Clear any existing user data to force login screen
-      localStorage.removeItem('currentUser');
-      setCurrentUser(null);
-      setShowLogin(true);
+      const currentUser = localStorage.getItem('currentUser');
+      if (currentUser) {
+        // User already logged in, load their data
+        const user = JSON.parse(currentUser);
+        setCurrentUser(user);
+        setShowLogin(false);
+        loadUserData(user);
+      } else {
+        // No user logged in, use static animals for now
+        setAnimals(staticAnimals);
+        setShowLogin(true);
+      }
     };
 
     checkExistingLogin();
   }, []);
 
-  // Load initial data
+    // Load initial data
   useEffect(() => {
     const loadInitialData = async () => {
       try {
@@ -94,9 +156,17 @@ function App() {
         setLoading(false);
       }
     };
-    
+
     loadInitialData();
   }, []);
+
+  // Refresh pets when user changes or when on swipe tab
+  useEffect(() => {
+    if (currentUser && activeTab === 'swipe') {
+      console.log('🔄 Triggering loadAllUserPets from useEffect');
+      loadAllUserPets();
+    }
+  }, [currentUser, activeTab]);
 
   const handleSwipe = async (direction) => {
     // Store last swiped animal for undo feature
@@ -215,6 +285,11 @@ function App() {
   const handleProfileCreated = (profile) => {
     setActivePetProfile(profile);
     setShowPetProfileCreator(false);
+    
+    // Refresh available animals to include new pets from all users
+    if (currentUser) {
+      loadAllUserPets();
+    }
   };
 
   const handleBackToProfileCreator = () => {
@@ -269,6 +344,11 @@ function App() {
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
+    
+    // Refresh animals when switching to swipe tab
+    if (tabId === 'swipe' && currentUser) {
+      loadAllUserPets();
+    }
   };
 
   const handleLoginSuccess = (user) => {
@@ -279,6 +359,9 @@ function App() {
   };
 
   const handleLogout = () => {
+    // Save current user's data before logout
+    saveUserDataBeforeLogout();
+    
     localStorage.removeItem('currentUser');
     setCurrentUser(null);
     setShowLogin(true);
@@ -286,6 +369,35 @@ function App() {
     setLikedAnimals([]);
     setMatches([]);
     setStats({ totalLikes: 0, totalMatches: 0 });
+    
+    // Clear session data
+    localStorage.removeItem('petProfiles');
+    localStorage.removeItem('activePetProfile');
+    localStorage.removeItem('matches');
+    localStorage.removeItem('sentInterests');
+    localStorage.removeItem('receivedInterests');
+  };
+
+  const saveUserDataBeforeLogout = () => {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    
+    if (currentUser.id) {
+      // Save current session data to user-specific storage
+      const petProfiles = JSON.parse(localStorage.getItem('petProfiles') || '[]');
+      const activePetProfile = JSON.parse(localStorage.getItem('activePetProfile') || '{}');
+      const matches = JSON.parse(localStorage.getItem('matches') || '[]');
+      const sentInterests = JSON.parse(localStorage.getItem('sentInterests') || '[]');
+      const receivedInterests = JSON.parse(localStorage.getItem('receivedInterests') || '[]');
+      
+      localStorage.setItem(`user_${currentUser.id}_petProfiles`, JSON.stringify(petProfiles));
+      localStorage.setItem(`user_${currentUser.id}_matches`, JSON.stringify(matches));
+      localStorage.setItem(`user_${currentUser.id}_sentInterests`, JSON.stringify(sentInterests));
+      localStorage.setItem(`user_${currentUser.id}_receivedInterests`, JSON.stringify(receivedInterests));
+      
+      if (activePetProfile.id) {
+        localStorage.setItem(`user_${currentUser.id}_activePetProfile`, activePetProfile.id);
+      }
+    }
   };
 
   if (loading) {
@@ -341,126 +453,233 @@ function App() {
     switch (activeTab) {
       case 'swipe':
         return (
-          <div className="main-content">
-            {/* Header */}
-            <div className="header">
-              <h1 className="title">
+          <>
+          {/* Left Sidebar Navigation */}
+          <div style={{
+            position: 'fixed',
+            left: '0',
+            top: '0',
+            bottom: '0',
+            width: '320px',
+            background: 'rgba(0, 0, 0, 0.1)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            padding: '2rem 1.5rem',
+            zIndex: 100,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.2rem'
+          }}>
+            {/* App Title & Info */}
+            <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+              <h2 style={{ 
+                color: 'white', 
+                fontSize: '1.6rem', 
+                fontWeight: 'bold',
+                marginBottom: '0.8rem',
+                fontFamily: 'Comic Sans MS, cursive'
+              }}>
                 TindrZoo Xtreme 🦁
-              </h1>
-              <p className="subtitle">
+              </h2>
+              <p style={{ 
+                color: 'rgba(255, 255, 255, 0.8)', 
+                fontSize: '0.9rem',
+                marginBottom: '1rem',
+                lineHeight: '1.4'
+              }}>
                 Swipe animals, find love, create chaos! 💕
               </p>
-              <div style={{ marginTop: '1rem', color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem' }}>
-                <p>Likes: {stats.totalLikes} | Matches: {stats.totalMatches}</p>
-                <div style={{ marginTop: '0.5rem' }}>
-                  <button
-                    onClick={handleBackToProfileCreator}
-                    style={{ 
-                      background: 'rgba(255,255,255,0.2)', 
-                      border: 'none', 
-                      color: 'white', 
-                      padding: '0.25rem 0.5rem', 
-                      borderRadius: '0.25rem', 
-                      fontSize: '0.75rem',
-                      marginRight: '0.5rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    🐾 Manage Profiles
-                  </button>
-                  {activePetProfile && (
-                    <button
-                      onClick={() => setShowPetProfile(true)}
-                      style={{ 
-                        background: 'rgba(255,255,255,0.2)', 
-                        border: 'none', 
-                        color: 'white', 
-                        padding: '0.25rem 0.5rem', 
-                        borderRadius: '0.25rem', 
-                        fontSize: '0.75rem',
-                        marginRight: '0.5rem',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      🐕 {activePetProfile.name}
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setShowFilters(true)}
-                    style={{ 
-                      background: 'rgba(255,255,255,0.2)', 
-                      border: 'none', 
-                      color: 'white', 
-                      padding: '0.25rem 0.5rem', 
-                      borderRadius: '0.25rem', 
-                      fontSize: '0.75rem',
-                      marginRight: '0.5rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    🔍 Filters
-                  </button>
-                  <button
-                    onClick={() => setShowUndo(true)}
-                    style={{ 
-                      background: 'rgba(255,255,255,0.2)', 
-                      border: 'none', 
-                      color: 'white', 
-                      padding: '0.25rem 0.5rem', 
-                      borderRadius: '0.25rem', 
-                      fontSize: '0.75rem',
-                      marginRight: '0.5rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ↩️ Undo
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('profile')}
-                    style={{ 
-                      background: 'rgba(255,255,255,0.2)', 
-                      border: 'none', 
-                      color: 'white', 
-                      padding: '0.25rem 0.5rem', 
-                      borderRadius: '0.25rem', 
-                      fontSize: '0.75rem',
-                      marginRight: '0.5rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    🐾 Browse Profiles
-                  </button>
-                  <button
-                    onClick={() => setShowDatabaseAdmin(true)}
-                    style={{ 
-                      background: 'rgba(255,255,255,0.2)', 
-                      border: 'none', 
-                      color: 'white', 
-                      padding: '0.25rem 0.5rem', 
-                      borderRadius: '0.25rem', 
-                      fontSize: '0.75rem',
-                      marginRight: '0.5rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    🗄️ Database
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    style={{ 
-                      background: 'rgba(239, 68, 68, 0.8)', 
-                      border: 'none', 
-                      color: 'white', 
-                      padding: '0.25rem 0.5rem', 
-                      borderRadius: '0.25rem', 
-                      fontSize: '0.75rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    🚪 Logout
-                  </button>
-                </div>
+              <div style={{ 
+                color: 'rgba(255,255,255,0.9)', 
+                fontSize: '0.95rem',
+                background: 'rgba(255,255,255,0.15)',
+                padding: '0.8rem 1rem',
+                borderRadius: '0.8rem',
+                border: '1px solid rgba(255,255,255,0.2)',
+                textAlign: 'center',
+                fontWeight: '600'
+              }}>
+                <p>Likes: {stats.totalLikes} | Matches: {stats.totalMatches} 💕</p>
               </div>
+            </div>
+            
+            <div style={{ 
+              height: '1px', 
+              background: 'rgba(255,255,255,0.2)', 
+              margin: '0.5rem 0' 
+            }}></div>
+            <button
+              onClick={handleBackToProfileCreator}
+              style={{ 
+                background: 'rgba(255,255,255,0.2)', 
+                border: 'none', 
+                color: 'white', 
+                padding: '1rem 1.5rem', 
+                borderRadius: '0.8rem', 
+                fontSize: '1.1rem',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+                transition: 'all 0.3s ease',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.8rem'
+              }}
+            >
+              🐾 Manage Profiles
+            </button>
+            {activePetProfile && (
+              <button
+                onClick={() => setShowPetProfile(true)}
+                style={{ 
+                  background: 'rgba(255,255,255,0.2)', 
+                  border: 'none', 
+                  color: 'white', 
+                  padding: '1rem 1.5rem', 
+                  borderRadius: '0.8rem', 
+                  fontSize: '1.1rem',
+                  cursor: 'pointer',
+                  width: '100%',
+                  textAlign: 'left',
+                  transition: 'all 0.3s ease',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.8rem'
+                }}
+              >
+                🐕 {activePetProfile.name}
+              </button>
+            )}
+            <button
+              onClick={() => setShowFilters(true)}
+              style={{ 
+                background: 'rgba(255,255,255,0.2)', 
+                border: 'none', 
+                color: 'white', 
+                padding: '0.75rem 1rem', 
+                borderRadius: '0.5rem', 
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              🔍 Filters
+            </button>
+            <button
+              onClick={() => setShowUndo(true)}
+              style={{ 
+                background: 'rgba(255,255,255,0.2)', 
+                border: 'none', 
+                color: 'white', 
+                padding: '0.75rem 1rem', 
+                borderRadius: '0.5rem', 
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              ↩️ Undo
+            </button>
+            <button
+              onClick={() => setActiveTab('profile')}
+              style={{ 
+                background: 'rgba(255,255,255,0.2)', 
+                border: 'none', 
+                color: 'white', 
+                padding: '0.75rem 1rem', 
+                borderRadius: '0.5rem', 
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              🐾 Browse Profiles
+            </button>
+            <button
+              onClick={() => setShowDatabaseAdmin(true)}
+              style={{ 
+                background: 'rgba(255,255,255,0.2)', 
+                border: 'none', 
+                color: 'white', 
+                padding: '0.75rem 1rem', 
+                borderRadius: '0.5rem', 
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              🗄️ Database
+            </button>
+            <button
+              onClick={handleLogout}
+              style={{ 
+                background: 'rgba(239, 68, 68, 0.8)', 
+                border: 'none', 
+                color: 'white', 
+                padding: '1rem 1.5rem', 
+                borderRadius: '0.8rem', 
+                fontSize: '1.1rem',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+                transition: 'all 0.3s ease',
+                marginTop: 'auto',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.8rem'
+              }}
+            >
+              🚪 Logout
+            </button>
+          </div>
+
+          <div className="main-content" style={{ marginLeft: '320px' }}>
+            {/* Top logout button for mobile/small screens */}
+            <div style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              zIndex: 50
+            }}>
+              <button
+                onClick={handleLogout}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.9)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '50px',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.transform = 'scale(1.05)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.4)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
+                }}
+              >
+                🚪 Logout
+              </button>
             </div>
 
             {/* Main Swipe Area */}
@@ -517,15 +736,32 @@ function App() {
                 </button>
               </div>
 
-              {/* Instructions */}
-              <div className="instructions">
-                <p>Swipe right to like, left to pass, or use the buttons above!</p>
-                <p className="animal-counter">
-                  Animal {currentAnimalIndex + 1} of {animals.length}
-                </p>
-              </div>
+                          {/* Instructions */}
+            <div className="instructions">
+              <p>Swipe right to like, left to pass, or use the buttons above!</p>
+              <p className="animal-counter">
+                Animal {currentAnimalIndex + 1} of {animals.length}
+              </p>
+              <button
+                onClick={loadAllUserPets}
+                style={{
+                  background: 'rgba(16, 185, 129, 0.8)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '25px',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  marginTop: '0.5rem',
+                  fontWeight: '600'
+                }}
+              >
+                🔄 Refresh Pets
+              </button>
+            </div>
             </div>
           </div>
+          </>
         );
       
       case 'matches':

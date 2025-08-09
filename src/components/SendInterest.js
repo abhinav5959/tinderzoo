@@ -57,8 +57,10 @@ const SendInterest = ({ animal, onInterestSent, onClose, isVisible }) => {
       const receivedInterest = {
         ...newInterest,
         id: Date.now() + 1,
-        fromPet: animal,
-        toPet: newInterest.fromPet
+        fromPet: newInterest.fromPet,
+        toPet: animal,
+        sentAt: new Date().toISOString(),
+        type: selectedMessage
       };
       receivedInterests.push(receivedInterest);
       localStorage.setItem('receivedInterests', JSON.stringify(receivedInterests));
@@ -236,3 +238,4 @@ const SendInterest = ({ animal, onInterestSent, onClose, isVisible }) => {
 };
 
 export default SendInterest;
+
