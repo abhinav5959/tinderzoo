@@ -91,7 +91,7 @@ For Software:
 *Complete walkthrough of TindrZoo Xtreme showing registration, profile creation, swiping, matching, and chatting features*
 
 # Live Demo
-(https://tinderzoo.onrender.com)available on Render
+(https://tinderzoo.onrender.com) available on Render
 
 # Additional Demos
 - **Database Admin Panel**: Click "🗄️ Database" in the app to see all stored data
