@@ -1,7 +1,7 @@
 {
   "name": "TindrZoo Xtreme Local Database",
   "version": "1.0.0",
-  "created": "2025-08-08T17:49:24.069Z",
+  "created": "2025-08-09T01:35:15.269Z",
   "description": "Local JSON-based database for TindrZoo Xtreme app",
   "collections": {
     "users": "User accounts and authentication data",
