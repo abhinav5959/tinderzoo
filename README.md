@@ -51,13 +51,13 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 For Software:
 
 # Screenshots (Add at least 3)
-![Login Screen](https://github.com/user-attachments/assets/517ad8e9-ad22-457d-9538-a9e62d137cd7)
+![Login Screen](https://github.com/user-attachments/assets/a3132777-a4ff-443e-9917-f766e3728fa7)
 *Beautiful login interface with animal-themed design, registration form, and feature highlights*
 
-![Swipe Interface](https://github.com/user-attachments/assets/swipe-interface-nala-giraffe)
+![Swipe Interface](https://github.com/user-attachments/assets/d1847ed8-bec6-4aab-85d7-4a16b83f7f6d)
 *Main swiping interface featuring Nala the Giraffe with gradient overlays, habitat badges, and smooth swipe controls*
 
-![Profile Creator](https://github.com/user-attachments/assets/profile-creator-screenshot)
+![Profile Creator](https://github.com/user-attachments/assets/aba0d91b-0c15-4f29-a457-cc7bb2b74145)
 *Comprehensive pet profile creation with personality traits, description, favorite activities, and photo upload functionality*
 
 # Diagrams
